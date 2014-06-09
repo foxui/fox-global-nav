@@ -1,0 +1,209 @@
+<fox-element name="fox-global-nav">
+    <script>
+    (function(env){
+        // todo: change the animation implements from 'left' to 'translateX'
+        var fox = env.fox;
+        var classNames = {
+            left: 'left',
+            right: 'right',
+            backIcon: 'icon-left-nav'
+        };
+
+        function createHeader(title, className) {
+            if (!title) {
+                return;
+            }
+
+            var el = document.createElement('h1');
+            el.innerHTML = title;
+            className && (el.className = className);
+
+            return el;
+        }
+
+        function createSide(side) {
+            var container = document.createElement('div');
+            container.className = classNames[side];
+
+            return container;
+        }
+
+        fox('fox-global-nav', {
+            lifecycle: {
+                created: function() {
+
+                    // navigation stacks
+                    this.stacks = [];
+
+                    // back icon dom
+                    this.backIcon = null;
+
+                    // left dom
+                    this.leftDom = createSide('left');
+                    this.appendChild(this.leftDom);
+
+                    // right dom
+                    this.rightDom = createSide('right');
+                    this.appendChild(this.rightDom);
+                }
+            },
+
+            methods: {
+                // {title:'', id:'', rightDoms: [], leftDoms: []}
+                push: function(page) {
+                    var me = this;
+
+                    this.stacks.push(page);
+
+                    var isFirstPage = this.stacks.length === 1;
+
+                    // init back icon
+                    if (this.stacks.length > 1 && !this.backIcon) {
+                        this.backIcon = document.createElement('fox-icon');
+                        this.backIcon.icon = classNames.backIcon;
+                        this.backIcon.classList.add('hide');
+                        this.leftDom.appendChild(this.backIcon);
+                    }
+
+                    if (this.stacks.length > 1) {
+                        setTimeout(function(){
+                            me.backIcon.classList.remove('hide');
+                        }, 16);
+                    }
+
+                    if (isFirstPage) {
+                        // only add left dom on first page
+                        var leftDoms = page.leftDoms;
+
+                        if (leftDoms && leftDoms.length) {
+                            var lwrapper = document.createElement('div');
+                            lwrapper.className = 'wrapper';
+
+                            leftDoms.forEach(function(dom){
+                                lwrapper.appendChild(dom);
+                            });
+
+                            this.leftDom.appendChild(lwrapper);
+                        }
+
+                        // just show title
+                        var curHeader = this.querySelector('h1:not(.prev):not(.next)');
+
+                        if (!curHeader) {
+                            curHeader = createHeader(page.title);
+                            this.appendChild(curHeader);
+                        }
+                        else {
+                            curHeader.innerHTML = page.title;
+                        }
+                        
+                        return;
+                    }
+
+                    // switch the status of left and right doms
+                    // switch out old doms
+                    var leftDom = this.leftDom.querySelector('.wrapper');
+
+                    // hide all left doms
+                    if (!isFirstPage && leftDom) {
+                        leftDom.classList.add('hide');
+                    }
+
+                    // hide right dom
+                    var rightDom = this.rightDom.querySelector('.wrapper:not(.hide)');
+                    rightDom && rightDom.classList.add('hide')
+
+                    // add new right doms
+                    if (page.rightDoms && page.rightDoms.length) {
+                        var rwrapper = document.createElement('div');
+                        rwrapper.className = 'wrapper';
+
+                        !isFirstPage && rwrapper.classList.add('hide');
+
+                        page.rightDoms.forEach(function(dom){
+                            rwrapper.appendChild(dom);
+                        });
+
+                        this.rightDom.appendChild(rwrapper);
+
+                        // display
+                        !isFirstPage && setTimeout(function(){
+                            rwrapper.classList.remove('hide');
+                        },16);
+                    }
+
+                    // switch the status of titles
+                    // the new title will switch in
+                    var nextHeader = this.querySelector('h1.next');
+
+                    if (!nextHeader) {
+                        nextHeader = createHeader(page.title, 'next');
+                        this.appendChild(nextHeader);
+                    }
+                    else {
+                        nextHeader.innerHTML = page.title;
+                    }
+
+                    // switch out previous header
+                    var prevHeader = this.querySelector('h1.prev:not(.out)');
+                    prevHeader && prevHeader.classList.add('out');
+
+                    // switch current header
+                    var curHeader = this.querySelector('h1:not(.prev):not(.next)');
+                    curHeader && curHeader.classList.add('prev');
+
+                    // display new header
+                    setTimeout(function(){
+                        nextHeader.classList.remove('next');
+                    },16);
+                    
+                },
+
+                pop: function() {
+                    if (this.stacks.length < 2) {
+                        return
+                    }
+
+                    var page = this.stacks.pop();
+
+                    if (this.stacks.length === 1) {
+                        this.backIcon.classList.add('hide');
+
+                        // show left doms
+                        var leftDom = this.leftDom.querySelector('.wrapper');
+                        leftDom && leftDom.classList.remove('hide');
+                    }
+
+                    // remove current right dom
+                    var curRightDom = this.rightDom.querySelector('.wrapper:not(.hide)');
+
+                    curRightDom && curRightDom.remove();
+
+                    // show last right doms
+                    var lastRightDoms = fox.query(this.rightDom, '.wrapper.hide');
+                    var lastRightDom = lastRightDoms[lastRightDoms.length-1];
+
+                    lastRightDom && lastRightDom.classList.remove('hide');
+
+
+                    // clear expire header
+                    var nextHeader = this.querySelector('h1.next');
+                    nextHeader && nextHeader.remove();
+
+                    var prevHeader = this.querySelector('h1.prev:not(.out)');
+
+                    var curHeader = this.querySelector('h1:not(.prev)');
+
+                    var outHeaders = this.querySelectorAll('h1.out');
+                    var outHeader = outHeaders[outHeaders.length-1];
+
+                    // switch status
+                    curHeader && curHeader.classList.add('next');
+                    prevHeader && prevHeader.classList.remove('prev');
+                    outHeader && outHeader.classList.remove('out');
+                }
+            }
+        });
+    })(this);
+    </script>
+</fox>

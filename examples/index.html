@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scale=no">
+        <title>Test of fox-icons</title>
+        <link rel="stylesheet" href="../fox-core/dist/foxui.css">
+        <link rel="stylesheet" href="../dist/fox-global-nav.css">
+        <link rel="stylesheet" href="../../fox-icon/dist/fox-icon.css">
+        <script src="../fox-core/dist/foxui.js"></script>
+        <link rel="import" href="../../fox-icon/dist/fox-icon.html"/>
+        <link rel="import" href="../dist/fox-global-nav.html"/>
+        <style>
+        </style>
+    </head>
+    <body>
+        <fox-global-nav>
+            <!-- <fox-icon icon="icon-bars" class="left"></fox-icon> -->
+            <!-- <fox-icon icon="icon-gear" class="right"></fox-icon> -->
+        </fox-global-nav>
+
+        <button id="push1" style="margin-top:100px">Push Page 1</button>
+        <button id="push2" style="margin-top:100px">Push Page 2</button>
+        <button id="push3" style="margin-top:100px">Push Page 3</button>
+        <button id="pop" style="margin-top:100px">Pop Page</button>
+
+
+        <!--fox-global-nav style="top:60px">
+            <fox-icon icon="icon-left-nav" class="left"></fox-icon>
+            <fox-icon icon="icon-compose" class="right"></fox-icon>
+            <h1 class="next">Page 3</h1>
+            <h1>Page 2</h1>
+            <h1 class="prev">Page 1</h1>
+            <h1 class="prev out">Page 0</h1>
+        </fox-global-nav>
+
+
+        <fox-global-nav style="top:120px">
+            <label class="left" style="color:#1284ff">取消</label>
+            <label class="right" style="color:#1284ff">发送</label>
+            <h1>发布评论</h1>
+        </fox-global-nav>
+
+
+        <fox-global-nav style="top:180px">
+            <div class="left">
+                <fox-icon icon="icon-bars"></fox-icon>
+            </div>
+            <div class="right">
+                <fox-icon icon="icon-person" class="right" style="margin-left:5px;"></fox-icon>
+                <fox-icon icon="icon-home" class="right"></fox-icon>
+            </div>
+            <h1>首页</h1>
+        </fox-global-nav-->
+        <!-- <div class="wrapper"></div> -->
+        <!-- <div class="wrapper hide"></div> -->
+        <script>
+            $(function(){
+                var pushBtn1 = $('#push1')[0];
+                var pushBtn2 = $('#push2')[0];
+                var pushBtn3 = $('#push3')[0];
+                var popBtn = $('#pop')[0];
+                var nav = $('fox-global-nav')[0];
+
+                function createIcon(icon) {
+                    var el = document.createElement('fox-icon');
+                    el.icon = icon;
+
+                    return el;
+                }
+
+                pushBtn1.onclick = function() {
+                    nav.push({
+                        title: 'Home',
+                        leftDoms: [
+                            createIcon('icon-bars')
+                        ],
+
+                        rightDoms: [
+                            createIcon('icon-gear')
+                        ]
+                    });
+                }
+
+                pushBtn2.onclick = function() {
+                    nav.push({
+                        title: 'New Mail',
+
+                        rightDoms: [
+                            createIcon('icon-compose')
+                        ]
+                    });
+                }
+
+                pushBtn3.onclick = function() {
+                    nav.push({
+                        title: 'Share',
+
+                        rightDoms: [
+                            createIcon('icon-search'),
+                            createIcon('icon-star')
+                        ]
+                    });
+                }
+
+                popBtn.onclick = function() {
+                    nav.pop();
+                }
+            });
+        </script>
+    </body>
+</html>
